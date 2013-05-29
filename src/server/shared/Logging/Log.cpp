@@ -433,6 +433,26 @@ void Log::outCommand(uint32 account, const char * str, ...)
     write(msg);
 }
 
+void Log::outDBcommandGM(uint32 AccountGM , const char * Command , const char * Select_type, uint32 SelectID)
+{
+    std::string command_str(Command);
+    std::string selectype_str(Select_type);
+    LoginDatabase.EscapeString(command_str);
+    LoginDatabase.EscapeString(selectype_str);
+    LoginDatabase.PExecute("INSERT INTO wotlk_command_gm( "
+                           " Command, "
+                           " Account, "
+                           " Select_type, "
+                           " Select_id "
+                           " )VALUES ( "
+                           " '%s', "
+                           " %u, "
+                           " '%s', "
+                           " %u )", command_str.c_str(), AccountGM, selectype_str.c_str(), SelectID);
+    
+    
+}
+
 void Log::SetRealmId(uint32 id)
 {
     for (AppenderMap::iterator it = appenders.begin(); it != appenders.end(); ++it)

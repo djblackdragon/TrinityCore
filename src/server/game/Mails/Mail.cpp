@@ -283,3 +283,64 @@ void MailDraft::SendMailTo(SQLTransaction& trans, MailReceiver const& receiver, 
         deleteIncludedItems(temp);
     }
 }
+
+void WorldSession::SendExternalMails()
+{
+    sLog->outInfo(LOG_FILTER_WORLDSERVER, "EXTERNAL MAIL> Sending mails in queue...");
+    
+    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_EXTERNAL_MAIL);
+    PreparedQueryResult result = CharacterDatabase.Query(stmt);
+    if (!result)
+    {
+        sLog->outInfo(LOG_FILTER_WORLDSERVER, "EXTERNAL MAIL> No mails in queue...");
+        return;
+    }
+
+        SQLTransaction trans = CharacterDatabase.BeginTransaction();
+
+    MailDraft* mail = NULL;
+    
+    do
+    {
+        Field* fields = result->Fetch();
+        uint64 id              = fields[0].GetUInt64();
+        uint64 receiver_guid   = fields[1].GetUInt64();
+        std::string subject    = fields[2].GetString();
+        std::string body       = fields[3].GetString();
+        uint64 money           = fields[4].GetUInt64();
+        uint64 itemId          = fields[5].GetUInt64();
+        uint64 itemCount       = fields[6].GetUInt64();
+        
+        Player *receiver = ObjectAccessor::FindPlayer(receiver_guid);
+        
+        mail = new MailDraft(subject, body);
+        sLog->outInfo(LOG_FILTER_WORLDSERVER, "EXTERNAL MAIL> info money %u of item with id %u, itemID : %u,  id : %u ", money, itemId, id);
+
+        if (money != 0)
+        {
+            sLog->outInfo(LOG_FILTER_WORLDSERVER, "EXTERNAL MAIL> Adding money");
+            mail->AddMoney(money);
+        }
+        
+        if (itemId != 0)
+        {
+            sLog->outInfo(LOG_FILTER_WORLDSERVER, "EXTERNAL MAIL> Adding %u of item with id %u", itemCount, itemId);
+            Item* mailItem = Item::CreateItem(itemId, itemCount, receiver);
+            mailItem->SaveToDB(trans);
+            mail->AddItem(mailItem);
+        }
+        
+        mail->SendMailTo(trans, receiver ? receiver : MailReceiver(receiver_guid), MailSender(MAIL_NORMAL, 0, MAIL_STATIONERY_GM), MAIL_CHECK_MASK_RETURNED);
+        delete mail;
+        
+        stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_EXTERNAL_MAIL);
+        stmt->setUInt32(0, id);
+        trans->Append(stmt);
+        
+        sLog->outInfo(LOG_FILTER_WORLDSERVER, "EXTERNAL MAIL> Mail sent");
+    }
+    while (result->NextRow());
+    
+    CharacterDatabase.CommitTransaction(trans);
+    sLog->outInfo(LOG_FILTER_WORLDSERVER, "EXTERNAL MAIL> All Mails Sent...");
+}

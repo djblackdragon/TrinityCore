@@ -53,6 +53,7 @@ class Log
 
         void outCommand(uint32 account, const char * str, ...) ATTR_PRINTF(3, 4);
         void outCharDump(char const* str, uint32 account_id, uint32 guid, char const* name);
+        void outDBcommandGM(uint32 AccountGM , const char * Command , const char * Select_type, uint32 SelectID);
         static std::string GetTimestampStr();
 
         void SetRealmId(uint32 id);
