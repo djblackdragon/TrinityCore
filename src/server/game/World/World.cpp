@@ -873,8 +873,8 @@ void World::LoadConfigSettings(bool reload)
 
     m_int_configs[CONFIG_MAIL_DELIVERY_DELAY] = ConfigMgr::GetIntDefault("MailDeliveryDelay", HOUR);
     
-    m_int_configs[CONFIG_EXTERNAL_MAIL] = sConfig->GetIntDefault("ExternalMail", 0);
-    m_int_configs[CONFIG_EXTERNAL_MAIL_INTERVAL] = sConfig->GetIntDefault("ExternalMailInterval", 1);
+    m_int_configs[CONFIG_EXTERNAL_MAIL] = ConfigMgr::GetIntDefault("ExternalMail", 0);
+    m_int_configs[CONFIG_EXTERNAL_MAIL_INTERVAL] = ConfigMgr::GetIntDefault("ExternalMailInterval", 1);
 
     m_int_configs[CONFIG_UPTIME_UPDATE] = ConfigMgr::GetIntDefault("UpdateUptimeInterval", 10);
     if (int32(m_int_configs[CONFIG_UPTIME_UPDATE]) <= 0)
