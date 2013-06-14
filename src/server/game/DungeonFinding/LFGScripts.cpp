@@ -28,6 +28,7 @@
 #include "ScriptMgr.h"
 #include "ObjectAccessor.h"
 #include "WorldSession.h"
+#include "World.h"
 
 namespace lfg
 {
@@ -192,7 +193,7 @@ void LFGGroupScript::OnRemoveMember(Group* group, uint64 guid, RemoveMethod meth
     if (Player* player = ObjectAccessor::FindPlayer(guid))
     {
         if (method == GROUP_REMOVEMETHOD_LEAVE && state == LFG_STATE_DUNGEON &&
-            players >= LFG_GROUP_KICK_VOTES_NEEDED)
+            players >= LFG_GROUP_KICK_VOTES_NEEDED && sWorld->getBoolConfig(CONFIG_DUNGEON_CAST_DESERTER))
             player->CastSpell(player, LFG_SPELL_DUNGEON_DESERTER, true);
         //else if (state == LFG_STATE_BOOT)
             // Update internal kick cooldown of kicked
