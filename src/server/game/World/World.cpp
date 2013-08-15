@@ -73,6 +73,7 @@
 #include "CharacterDatabaseCleaner.h"
 #include "ScriptMgr.h"
 #include "WeatherMgr.h"
+#include "AuctionHouseBot.h"
 #include "CreatureTextMgr.h"
 #include "SmartAI.h"
 #include "Channel.h"
@@ -871,6 +872,9 @@ void World::LoadConfigSettings(bool reload)
     m_int_configs[CONFIG_GROUP_VISIBILITY] = sConfigMgr->GetIntDefault("Visibility.GroupMode", 1);
 
     m_int_configs[CONFIG_MAIL_DELIVERY_DELAY] = sConfigMgr->GetIntDefault("MailDeliveryDelay", HOUR);
+    
+    m_int_configs[CONFIG_EXTERNAL_MAIL] = ConfigMgr::GetIntDefault("ExternalMail", 0);
+    m_int_configs[CONFIG_EXTERNAL_MAIL_INTERVAL] = ConfigMgr::GetIntDefault("ExternalMailInterval", 1); 
 
     m_int_configs[CONFIG_UPTIME_UPDATE] = sConfigMgr->GetIntDefault("UpdateUptimeInterval", 10);
     if (int32(m_int_configs[CONFIG_UPTIME_UPDATE]) <= 0)
@@ -1032,6 +1036,7 @@ void World::LoadConfigSettings(bool reload)
     m_int_configs[CONFIG_ARENA_START_MATCHMAKER_RATING]              = sConfigMgr->GetIntDefault ("Arena.ArenaStartMatchmakerRating", 1500);
     m_bool_configs[CONFIG_ARENA_SEASON_IN_PROGRESS]                  = sConfigMgr->GetBoolDefault("Arena.ArenaSeason.InProgress", true);
     m_bool_configs[CONFIG_ARENA_LOG_EXTENDED_INFO]                   = sConfigMgr->GetBoolDefault("ArenaLog.ExtendedInfo", false);
+    m_bool_configs[CONFIG_DUNGEON_CAST_DESERTER]                     = ConfigMgr::GetBoolDefault("DungeonFinder.CastDeserter", false);
 
     m_bool_configs[CONFIG_OFFHAND_CHECK_AT_SPELL_UNLEARN]            = sConfigMgr->GetBoolDefault("OffhandCheckAtSpellUnlearn", true);
 
@@ -1720,6 +1725,8 @@ void World::SetInitialWorldSettings()
     //one second is 1000 -(tested on win system)
     /// @todo Get rid of magic numbers
     mail_timer = ((((localtime(&m_gameTime)->tm_hour + 20) % 24)* HOUR * IN_MILLISECONDS) / m_timers[WUPDATE_AUCTIONS].GetInterval());
+	
+    extmail_timer.SetInterval(m_int_configs[CONFIG_EXTERNAL_MAIL_INTERVAL] * MINUTE * IN_MILLISECONDS); 
                                                             //1440
     mail_timer_expires = ((DAY * IN_MILLISECONDS) / (m_timers[WUPDATE_AUCTIONS].GetInterval()));
     TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Mail timer set to: " UI64FMTD ", mail return is called every " UI64FMTD " minutes", uint64(mail_timer), uint64(mail_timer_expires));
@@ -1791,6 +1798,9 @@ void World::SetInitialWorldSettings()
     InitGuildResetTime();
 
     LoadCharacterNameData();
+	
+    sLog->outInfo(LOG_FILTER_SERVER_LOADING, "Initialize AuctionHouseBot...");
+    auctionbot.Initialize();
 
     uint32 startupDuration = GetMSTimeDiffToNow(startupBegin);
 
@@ -1952,6 +1962,17 @@ void World::Update(uint32 diff)
 
     if (m_gameTime > m_NextRandomBGReset)
         ResetRandomBG();
+		
+    /// Handle external mail
+    if (m_int_configs[CONFIG_EXTERNAL_MAIL] != 0)
+    {
+        extmail_timer.Update(diff);
+        if (extmail_timer.Passed())
+        {
+            WorldSession::SendExternalMails();
+            extmail_timer.Reset();
+        }
+    }
 
     if (m_gameTime > m_NextGuildReset)
         ResetGuildCap();
@@ -1959,6 +1980,7 @@ void World::Update(uint32 diff)
     /// <ul><li> Handle auctions when the timer has passed
     if (m_timers[WUPDATE_AUCTIONS].Passed())
     {
+        auctionbot.Update(); 
         m_timers[WUPDATE_AUCTIONS].Reset();
 
         ///- Update mails (return old mails with item, or delete them)
