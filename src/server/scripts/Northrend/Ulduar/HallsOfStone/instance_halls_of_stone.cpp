@@ -33,7 +33,7 @@ class instance_halls_of_stone : public InstanceMapScript
 public:
     instance_halls_of_stone() : InstanceMapScript("instance_halls_of_stone", 599) { }
 
-    InstanceScript* GetInstanceScript(InstanceMap* map) const
+    InstanceScript* GetInstanceScript(InstanceMap* map) const OVERRIDE
     {
         return new instance_halls_of_stone_InstanceMapScript(map);
     }
@@ -65,7 +65,7 @@ public:
 
         std::string str_data;
 
-        void Initialize()
+        void Initialize() OVERRIDE
         {
             uiMaidenOfGrief = 0;
             uiKrystallus = 0;
@@ -90,7 +90,7 @@ public:
                 m_auiEncounter[i] = NOT_STARTED;
         }
 
-        void OnCreatureCreate(Creature* creature)
+        void OnCreatureCreate(Creature* creature) OVERRIDE
         {
             switch (creature->GetEntry())
             {
@@ -104,7 +104,7 @@ public:
             }
         }
 
-        void OnGameObjectCreate(GameObject* go)
+        void OnGameObjectCreate(GameObject* go) OVERRIDE
         {
             switch (go->GetEntry())
             {
@@ -153,7 +153,7 @@ public:
             }
         }
 
-        void SetData(uint32 type, uint32 data)
+        void SetData(uint32 type, uint32 data) OVERRIDE
         {
             switch (type)
             {
@@ -186,7 +186,7 @@ public:
                 SaveToDB();
         }
 
-        uint32 GetData(uint32 type) const
+        uint32 GetData(uint32 type) const OVERRIDE
         {
             switch (type)
             {
@@ -199,7 +199,7 @@ public:
             return 0;
         }
 
-        uint64 GetData64(uint32 identifier) const
+        uint64 GetData64(uint32 identifier) const OVERRIDE
         {
             switch (identifier)
             {
@@ -221,7 +221,7 @@ public:
             return 0;
         }
 
-        std::string GetSaveData()
+        std::string GetSaveData() OVERRIDE
         {
             OUT_SAVE_INST_DATA;
 
@@ -234,7 +234,7 @@ public:
             return str_data;
         }
 
-        void Load(const char* in)
+        void Load(const char* in) OVERRIDE
         {
             if (!in)
             {

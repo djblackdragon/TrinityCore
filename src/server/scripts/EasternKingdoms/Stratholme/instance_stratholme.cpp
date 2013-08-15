@@ -72,7 +72,7 @@ class instance_stratholme : public InstanceMapScript
             std::set<uint64> abomnationGUID;
             EventMap events;
 
-            void Initialize()
+            void Initialize() OVERRIDE
             {
                 for (uint8 i = 0; i < MAX_ENCOUNTER; ++i)
                     EncounterState[i] = NOT_STARTED;
@@ -126,7 +126,7 @@ class instance_stratholme : public InstanceMapScript
                 }
             }
 
-            void OnCreatureCreate(Creature* creature)
+            void OnCreatureCreate(Creature* creature) OVERRIDE
             {
                 switch (creature->GetEntry())
                 {
@@ -146,7 +146,7 @@ class instance_stratholme : public InstanceMapScript
                 }
             }
 
-            void OnCreatureRemove(Creature* creature)
+            void OnCreatureRemove(Creature* creature) OVERRIDE
             {
                 switch (creature->GetEntry())
                 {
@@ -160,7 +160,7 @@ class instance_stratholme : public InstanceMapScript
                 }
             }
 
-            void OnGameObjectCreate(GameObject* go)
+            void OnGameObjectCreate(GameObject* go) OVERRIDE
             {
                 switch (go->GetEntry())
                 {
@@ -213,7 +213,7 @@ class instance_stratholme : public InstanceMapScript
                 }
             }
 
-            void SetData(uint32 type, uint32 data)
+            void SetData(uint32 type, uint32 data) OVERRIDE
             {
                 switch (type)
                 {
@@ -246,23 +246,29 @@ class instance_stratholme : public InstanceMapScript
                     case TYPE_BARONESS:
                         EncounterState[1] = data;
                         if (data == IN_PROGRESS)
+                        {
                             HandleGameObject(ziggurat1GUID, true);
-                        if (data == IN_PROGRESS)                    //change to DONE when crystals implemented
+                            //change to DONE when crystals implemented
                             StartSlaugtherSquare();
+                        }
                         break;
                     case TYPE_NERUB:
                         EncounterState[2] = data;
                         if (data == IN_PROGRESS)
+                        {
                             HandleGameObject(ziggurat2GUID, true);
-                        if (data == IN_PROGRESS)                    //change to DONE when crystals implemented
+                            //change to DONE when crystals implemented
                             StartSlaugtherSquare();
+                        }
                         break;
                     case TYPE_PALLID:
                         EncounterState[3] = data;
                         if (data == IN_PROGRESS)
+                        {
                             HandleGameObject(ziggurat3GUID, true);
-                        if (data == IN_PROGRESS)                    //change to DONE when crystals implemented
+                            //change to DONE when crystals implemented
                             StartSlaugtherSquare();
+                        }
                         break;
                     case TYPE_RAMSTEIN:
                         if (data == IN_PROGRESS)
@@ -347,7 +353,7 @@ class instance_stratholme : public InstanceMapScript
                     SaveToDB();
             }
 
-            std::string GetSaveData()
+            std::string GetSaveData() OVERRIDE
             {
                 OUT_SAVE_INST_DATA;
 
@@ -359,7 +365,7 @@ class instance_stratholme : public InstanceMapScript
                 return saveStream.str();
             }
 
-            void Load(const char* in)
+            void Load(const char* in) OVERRIDE
             {
                 if (!in)
                 {
@@ -384,7 +390,7 @@ class instance_stratholme : public InstanceMapScript
                 OUT_LOAD_INST_DATA_COMPLETE;
             }
 
-            uint32 GetData(uint32 type) const
+            uint32 GetData(uint32 type) const OVERRIDE
             {
                   switch (type)
                   {
@@ -408,7 +414,7 @@ class instance_stratholme : public InstanceMapScript
                   return 0;
             }
 
-            uint64 GetData64(uint32 data) const
+            uint64 GetData64(uint32 data) const OVERRIDE
             {
                 switch (data)
                 {
@@ -420,7 +426,7 @@ class instance_stratholme : public InstanceMapScript
                 return 0;
             }
 
-            void Update(uint32 diff)
+            void Update(uint32 diff) OVERRIDE
             {
                 events.Update(diff);
 
@@ -451,7 +457,7 @@ class instance_stratholme : public InstanceMapScript
             }
         };
 
-        InstanceScript* GetInstanceScript(InstanceMap* map) const
+        InstanceScript* GetInstanceScript(InstanceMap* map) const OVERRIDE
         {
             return new instance_stratholme_InstanceMapScript(map);
         }

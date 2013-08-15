@@ -27,14 +27,17 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "sethekk_halls.h"
 
-enum TailonkingIkiss
+enum Says
 {
     SAY_INTRO                   = 0,
     SAY_AGGRO                   = 1,
     SAY_SLAY                    = 2,
     SAY_DEATH                   = 3,
-    EMOTE_ARCANE_EXP            = 4,
+    EMOTE_ARCANE_EXP            = 4
+};
 
+enum Spells
+{
     SPELL_BLINK                 = 38194,
     SPELL_BLINK_TELEPORT        = 38203,
     SPELL_MANA_SHIELD           = 38151,
@@ -53,30 +56,11 @@ class boss_talon_king_ikiss : public CreatureScript
 public:
     boss_talon_king_ikiss() : CreatureScript("boss_talon_king_ikiss") { }
 
-    CreatureAI* GetAI(Creature* creature) const
+    struct boss_talon_king_ikissAI : public BossAI
     {
-        return new boss_talon_king_ikissAI (creature);
-    }
+        boss_talon_king_ikissAI(Creature* creature) : BossAI(creature, DATA_TALON_KING_IKISS) { }
 
-    struct boss_talon_king_ikissAI : public ScriptedAI
-    {
-        boss_talon_king_ikissAI(Creature* creature) : ScriptedAI(creature)
-        {
-            instance = creature->GetInstanceScript();
-        }
-
-        InstanceScript* instance;
-
-        uint32 ArcaneVolley_Timer;
-        uint32 Sheep_Timer;
-        uint32 Blink_Timer;
-        uint32 Slow_Timer;
-
-        bool ManaShield;
-        bool Blink;
-        bool Intro;
-
-        void Reset()
+        void Reset() OVERRIDE
         {
             ArcaneVolley_Timer = 5000;
             Sheep_Timer = 8000;
@@ -87,7 +71,8 @@ public:
             ManaShield = false;
         }
 
-        void MoveInLineOfSight(Unit* who)
+        void MoveInLineOfSight(Unit* who) OVERRIDE
+
         {
             if (!me->GetVictim() && me->CanCreatureAttack(who))
             {
@@ -109,25 +94,25 @@ public:
             }
         }
 
-        void EnterCombat(Unit* /*who*/)
+        void EnterCombat(Unit* /*who*/) OVERRIDE
         {
             Talk(SAY_AGGRO);
         }
 
-        void JustDied(Unit* /*killer*/)
+        void JustDied(Unit* /*killer*/) OVERRIDE
         {
             Talk(SAY_DEATH);
 
             if (instance)
-                instance->SetData(DATA_IKISSDOOREVENT, DONE);
+                instance->SetData(DATA_TALON_KING_IKISS, DONE);
         }
 
-        void KilledUnit(Unit* /*victim*/)
+        void KilledUnit(Unit* /*victim*/) OVERRIDE
         {
             Talk(SAY_SLAY);
         }
 
-        void UpdateAI(uint32 diff)
+        void UpdateAI(uint32 diff) OVERRIDE
         {
             if (!UpdateVictim())
                 return;
@@ -203,8 +188,22 @@ public:
             if (!Blink)
                 DoMeleeAttackIfReady();
         }
+
+        private:
+            uint32 ArcaneVolley_Timer;
+            uint32 Sheep_Timer;
+            uint32 Blink_Timer;
+            uint32 Slow_Timer;
+
+            bool ManaShield;
+            bool Blink;
+            bool Intro;
     };
 
+    CreatureAI* GetAI(Creature* creature) const OVERRIDE
+    {
+        return new boss_talon_king_ikissAI(creature);
+    }
 };
 
 void AddSC_boss_talon_king_ikiss()

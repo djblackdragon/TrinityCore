@@ -49,13 +49,13 @@ uint8 Log::NextAppenderId()
 int32 GetConfigIntDefault(std::string base, const char* name, int32 value)
 {
     base.append(name);
-    return ConfigMgr::GetIntDefault(base.c_str(), value);
+    return sConfigMgr->GetIntDefault(base.c_str(), value);
 }
 
 std::string GetConfigStringDefault(std::string base, const char* name, const char* value)
 {
     base.append(name);
-    return ConfigMgr::GetStringDefault(base.c_str(), value);
+    return sConfigMgr->GetStringDefault(base.c_str(), value);
 }
 
 // Returns default logger if the requested logger is not found
@@ -84,7 +84,7 @@ void Log::CreateAppenderFromConfig(const char* name)
     // if type = Console. optional1 = Color
     std::string options = "Appender.";
     options.append(name);
-    options = ConfigMgr::GetStringDefault(options.c_str(), "");
+    options = sConfigMgr->GetStringDefault(options.c_str(), "");
     Tokenizer tokens(options, ',');
     Tokenizer::const_iterator iter = tokens.begin();
     uint8 size = tokens.size();
@@ -174,7 +174,7 @@ void Log::CreateLoggerFromConfig(const char* name)
 
     std::string options = "Logger.";
     options.append(name);
-    options = ConfigMgr::GetStringDefault(options.c_str(), "");
+    options = sConfigMgr->GetStringDefault(options.c_str(), "");
 
     if (options.empty())
     {
@@ -236,7 +236,7 @@ void Log::CreateLoggerFromConfig(const char* name)
 
 void Log::ReadAppendersFromConfig()
 {
-    std::istringstream ss(ConfigMgr::GetStringDefault("Appenders", ""));
+    std::istringstream ss(sConfigMgr->GetStringDefault("Appenders", ""));
     std::string name;
 
     do
@@ -250,7 +250,7 @@ void Log::ReadAppendersFromConfig()
 
 void Log::ReadLoggersFromConfig()
 {
-    std::istringstream ss(ConfigMgr::GetStringDefault("Loggers", ""));
+    std::istringstream ss(sConfigMgr->GetStringDefault("Loggers", ""));
     std::string name;
 
     do
@@ -478,11 +478,11 @@ void Log::LoadFromConfig()
 {
     Close();
 
-    if (ConfigMgr::GetBoolDefault("Log.Async.Enable", false))
+    if (sConfigMgr->GetBoolDefault("Log.Async.Enable", false))
         worker = new LogWorker();
 
     AppenderId = 0;
-    m_logsDir = ConfigMgr::GetStringDefault("LogsDir", "");
+    m_logsDir = sConfigMgr->GetStringDefault("LogsDir", "");
     if (!m_logsDir.empty())
         if ((m_logsDir.at(m_logsDir.length() - 1) != '/') && (m_logsDir.at(m_logsDir.length() - 1) != '\\'))
             m_logsDir.push_back('/');

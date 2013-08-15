@@ -39,7 +39,7 @@ class instance_shadow_labyrinth : public InstanceMapScript
 public:
     instance_shadow_labyrinth() : InstanceMapScript("instance_shadow_labyrinth", 555) { }
 
-    InstanceScript* GetInstanceScript(InstanceMap* map) const
+    InstanceScript* GetInstanceScript(InstanceMap* map) const OVERRIDE
     {
         return new instance_shadow_labyrinth_InstanceMapScript(map);
     }
@@ -57,7 +57,7 @@ public:
         uint64 m_uiGrandmasterVorpil;
         uint32 m_uiFelOverseerCount;
 
-        void Initialize()
+        void Initialize() OVERRIDE
         {
             memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
 
@@ -68,7 +68,7 @@ public:
             m_uiFelOverseerCount = 0;
         }
 
-        bool IsEncounterInProgress() const
+        bool IsEncounterInProgress() const OVERRIDE
         {
             for (uint8 i = 0; i < EncounterCount; ++i)
                 if (m_auiEncounter[i] == IN_PROGRESS)
@@ -77,7 +77,7 @@ public:
             return false;
         }
 
-        void OnGameObjectCreate(GameObject* go)
+        void OnGameObjectCreate(GameObject* go) OVERRIDE
         {
             switch (go->GetEntry())
             {
@@ -94,7 +94,7 @@ public:
             }
         }
 
-        void OnCreatureCreate(Creature* creature)
+        void OnCreatureCreate(Creature* creature) OVERRIDE
         {
             switch (creature->GetEntry())
             {
@@ -111,7 +111,7 @@ public:
             }
         }
 
-        void SetData(uint32 type, uint32 uiData)
+        void SetData(uint32 type, uint32 uiData) OVERRIDE
         {
             switch (type)
             {
@@ -174,7 +174,7 @@ public:
             }
         }
 
-        uint32 GetData(uint32 type) const
+        uint32 GetData(uint32 type) const OVERRIDE
         {
             switch (type)
             {
@@ -186,7 +186,7 @@ public:
             return false;
         }
 
-        uint64 GetData64(uint32 identifier) const
+        uint64 GetData64(uint32 identifier) const OVERRIDE
         {
             if (identifier == DATA_GRANDMASTERVORPIL)
                 return m_uiGrandmasterVorpil;
@@ -194,12 +194,12 @@ public:
             return 0;
         }
 
-        std::string GetSaveData()
+        std::string GetSaveData() OVERRIDE
         {
             return str_data;
         }
 
-        void Load(const char* in)
+        void Load(const char* in) OVERRIDE
         {
             if (!in)
             {

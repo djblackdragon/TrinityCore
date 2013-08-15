@@ -35,26 +35,23 @@ class instance_archavon : public InstanceMapScript
         {
             instance_archavon_InstanceMapScript(Map* map) : InstanceScript(map)
             {
-                SetBossNumber(MAX_ENCOUNTER);
+                SetBossNumber(EncounterCount);
+
+                EmalonGUID      = 0;
+                ToravonGUID     = 0;
+                ArchavonDeath   = 0;
+                EmalonDeath     = 0;
+                KoralonDeath    = 0;
             }
 
-            void Initialize()
-            {
-                EmalonGUID = 0;
-                ToravonGUID = 0;
-                ArchavonDeath = 0;
-                EmalonDeath = 0;
-                KoralonDeath = 0;
-            }
-
-            void OnCreatureCreate(Creature* creature)
+            void OnCreatureCreate(Creature* creature) OVERRIDE
             {
                 switch (creature->GetEntry())
                 {
-                    case CREATURE_EMALON:
+                    case NPC_EMALON:
                         EmalonGUID = creature->GetGUID();
                         break;
-                    case CREATURE_TORAVON:
+                    case NPC_TORAVON:
                         ToravonGUID = creature->GetGUID();
                         break;
                     default:
@@ -62,7 +59,7 @@ class instance_archavon : public InstanceMapScript
                 }
             }
 
-            uint64 GetData64(uint32 identifier) const
+            uint64 GetData64(uint32 identifier) const OVERRIDE
             {
                 switch (identifier)
                 {
@@ -77,7 +74,7 @@ class instance_archavon : public InstanceMapScript
                 return 0;
             }
 
-            bool SetBossState(uint32 type, EncounterState state)
+            bool SetBossState(uint32 type, EncounterState state) OVERRIDE
             {
                 if (!InstanceScript::SetBossState(type, state))
                     return false;
@@ -106,7 +103,7 @@ class instance_archavon : public InstanceMapScript
                 return true;
             }
 
-            bool CheckAchievementCriteriaMeet(uint32 criteria_id, Player const* /*source*/, Unit const* /*target*/, uint32 /*miscvalue1*/)
+            bool CheckAchievementCriteriaMeet(uint32 criteria_id, Player const* /*source*/, Unit const* /*target*/, uint32 /*miscvalue1*/) OVERRIDE
             {
                 switch (criteria_id)
                 {
@@ -136,7 +133,7 @@ class instance_archavon : public InstanceMapScript
             time_t KoralonDeath;
         };
 
-        InstanceScript* GetInstanceScript(InstanceMap* map) const
+        InstanceScript* GetInstanceScript(InstanceMap* map) const OVERRIDE
         {
             return new instance_archavon_InstanceMapScript(map);
         }

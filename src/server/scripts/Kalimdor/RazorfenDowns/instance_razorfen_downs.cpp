@@ -28,7 +28,7 @@ class instance_razorfen_downs : public InstanceMapScript
 public:
     instance_razorfen_downs() : InstanceMapScript("instance_razorfen_downs", 129) { }
 
-    InstanceScript* GetInstanceScript(InstanceMap* map) const
+    InstanceScript* GetInstanceScript(InstanceMap* map) const OVERRIDE
     {
         return new instance_razorfen_downs_InstanceMapScript(map);
     }
@@ -47,7 +47,7 @@ public:
 
         std::string str_data;
 
-        void Initialize()
+        void Initialize() OVERRIDE
         {
             uiGongGUID = 0;
 
@@ -56,7 +56,7 @@ public:
             memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
         }
 
-        std::string GetSaveData()
+        std::string GetSaveData() OVERRIDE
         {
             OUT_SAVE_INST_DATA;
 
@@ -71,7 +71,7 @@ public:
             return str_data;
         }
 
-        void Load(const char* in)
+        void Load(const char* in) OVERRIDE
         {
             if (!in)
             {
@@ -101,7 +101,7 @@ public:
             OUT_LOAD_INST_DATA_COMPLETE;
         }
 
-        void OnGameObjectCreate(GameObject* go)
+        void OnGameObjectCreate(GameObject* go) OVERRIDE
         {
             switch (go->GetEntry())
             {
@@ -115,7 +115,7 @@ public:
             }
         }
 
-        void SetData(uint32 uiType, uint32 uiData)
+        void SetData(uint32 uiType, uint32 uiData) OVERRIDE
         {
             if (uiType == DATA_GONG_WAVES)
             {
@@ -145,15 +145,15 @@ public:
                         switch (uiGongWaves)
                         {
                             case 1:
-                                uiCreature = CREATURE_TOMB_FIEND;
+                                uiCreature = NPC_TOMB_FIEND;
                                 uiSummonTimes = 7;
                                 break;
                             case 10:
-                                uiCreature = CREATURE_TOMB_REAVER;
+                                uiCreature = NPC_TOMB_REAVER;
                                 uiSummonTimes = 3;
                                 break;
                             case 16:
-                                uiCreature = CREATURE_TUTEN_KASH;
+                                uiCreature = NPC_TUTEN_KASH;
                                 break;
                             default:
                                 break;
@@ -187,7 +187,7 @@ public:
             }
         }
 
-        uint32 GetData(uint32 uiType) const
+        uint32 GetData(uint32 uiType) const OVERRIDE
         {
             switch (uiType)
             {
@@ -198,7 +198,7 @@ public:
             return 0;
         }
 
-        uint64 GetData64(uint32 uiType) const
+        uint64 GetData64(uint32 uiType) const OVERRIDE
         {
             switch (uiType)
             {

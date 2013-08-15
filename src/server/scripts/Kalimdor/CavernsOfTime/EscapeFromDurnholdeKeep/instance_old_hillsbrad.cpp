@@ -45,7 +45,7 @@ class instance_old_hillsbrad : public InstanceMapScript
 public:
     instance_old_hillsbrad() : InstanceMapScript("instance_old_hillsbrad", 560) { }
 
-    InstanceScript* GetInstanceScript(InstanceMap* map) const
+    InstanceScript* GetInstanceScript(InstanceMap* map) const OVERRIDE
     {
         return new instance_old_hillsbrad_InstanceMapScript(map);
     }
@@ -62,7 +62,7 @@ public:
         uint64 TarethaGUID;
         uint64 EpochGUID;
 
-        void Initialize()
+        void Initialize() OVERRIDE
         {
             memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
 
@@ -104,7 +104,7 @@ public:
             }
         }
 
-        void OnCreatureCreate(Creature* creature)
+        void OnCreatureCreate(Creature* creature) OVERRIDE
         {
             switch (creature->GetEntry())
             {
@@ -120,7 +120,7 @@ public:
             }
         }
 
-        void SetData(uint32 type, uint32 data)
+        void SetData(uint32 type, uint32 data) OVERRIDE
         {
             Player* player = GetPlayerInMap();
 
@@ -203,7 +203,7 @@ public:
             }
         }
 
-        uint32 GetData(uint32 data) const
+        uint32 GetData(uint32 data) const OVERRIDE
         {
             switch (data)
             {
@@ -223,7 +223,7 @@ public:
             return 0;
         }
 
-        uint64 GetData64(uint32 data) const
+        uint64 GetData64(uint32 data) const OVERRIDE
         {
             switch (data)
             {

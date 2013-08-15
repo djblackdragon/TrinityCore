@@ -44,7 +44,7 @@ class instance_sunwell_plateau : public InstanceMapScript
 public:
     instance_sunwell_plateau() : InstanceMapScript("instance_sunwell_plateau", 580) { }
 
-    InstanceScript* GetInstanceScript(InstanceMap* map) const
+    InstanceScript* GetInstanceScript(InstanceMap* map) const OVERRIDE
     {
         return new instance_sunwell_plateau_InstanceMapScript(map);
     }
@@ -81,7 +81,7 @@ public:
         uint32 SpectralRealmTimer;
         std::vector<uint64> SpectralRealmList;
 
-        void Initialize()
+        void Initialize() OVERRIDE
         {
             memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
 
@@ -113,7 +113,7 @@ public:
             SpectralRealmTimer = 5000;
         }
 
-        bool IsEncounterInProgress() const
+        bool IsEncounterInProgress() const OVERRIDE
         {
             for (uint8 i = 0; i < MAX_ENCOUNTER; ++i)
                 if (m_auiEncounter[i] == IN_PROGRESS)
@@ -141,7 +141,7 @@ public:
             return NULL;
         }
 
-        void OnCreatureCreate(Creature* creature)
+        void OnCreatureCreate(Creature* creature) OVERRIDE
         {
             switch (creature->GetEntry())
             {
@@ -161,7 +161,7 @@ public:
             }
         }
 
-        void OnGameObjectCreate(GameObject* go)
+        void OnGameObjectCreate(GameObject* go) OVERRIDE
         {
             switch (go->GetEntry())
             {
@@ -182,7 +182,7 @@ public:
             }
         }
 
-        uint32 GetData(uint32 id) const
+        uint32 GetData(uint32 id) const OVERRIDE
         {
             switch (id)
             {
@@ -196,7 +196,7 @@ public:
             return 0;
         }
 
-        uint64 GetData64(uint32 id) const
+        uint64 GetData64(uint32 id) const OVERRIDE
         {
             switch (id)
             {
@@ -221,7 +221,7 @@ public:
             return 0;
         }
 
-        void SetData(uint32 id, uint32 data)
+        void SetData(uint32 id, uint32 data) OVERRIDE
         {
             switch (id)
             {
@@ -272,7 +272,7 @@ public:
                 SaveToDB();
         }
 
-        std::string GetSaveData()
+        std::string GetSaveData() OVERRIDE
         {
             OUT_SAVE_INST_DATA;
             std::ostringstream stream;
@@ -283,7 +283,7 @@ public:
             return stream.str();
         }
 
-        void Load(char const* in)
+        void Load(char const* in) OVERRIDE
         {
             if (!in)
             {
